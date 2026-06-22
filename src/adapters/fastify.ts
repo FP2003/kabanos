@@ -1,0 +1,4 @@
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import type { KabanosInstance } from '../core.js';
+
+export function kabanosFastify(instance:KabanosInstance):FastifyPluginAsync{return async fastify=>{const handler=async(request:FastifyRequest,reply:FastifyReply)=>{const origin=`${request.protocol}://${request.host}`;const web=new Request(new URL(request.url,origin),{method:request.method,headers:request.headers as HeadersInit,body:['GET','HEAD'].includes(request.method)?undefined:JSON.stringify(request.body)});const response=await instance.handler(web,request);reply.status(response.status);response.headers.forEach((value,key)=>reply.header(key,value));return reply.send(Buffer.from(await response.arrayBuffer()));};fastify.all(instance.config.mountPath,handler);fastify.all(`${instance.config.mountPath}/*`,handler);};}
