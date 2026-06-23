@@ -59,8 +59,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm pack --pack-destination /tmp/kabanos-pack --no-run-scripts
+      - run: pnpm pack --pack-destination /tmp/kabanos-pack
       - name: Install and import packed package
         run: |
           mkdir /tmp/smoke-test && cd /tmp/smoke-test
