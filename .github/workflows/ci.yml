@@ -52,7 +52,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: npx playwright install chromium --with-deps
-      - run: PLAYWRIGHT_CHROMIUM_PATH=$(which chromium-browser || which chromium) pnpm test:e2e
+      - run: pnpm test:e2e
 
   smoke:
     name: Package smoke test
@@ -67,7 +67,8 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm pack --pack-destination /tmp/kabanos-pack
+      - run: pnpm build
+      - run: pnpm pack --pack-destination /tmp/kabanos-pack --no-run-scripts
       - name: Install and import packed package
         run: |
           mkdir /tmp/smoke-test && cd /tmp/smoke-test
