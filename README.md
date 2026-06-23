@@ -90,7 +90,7 @@ export default defineConfig({
 
 Exactly one column must have `completion: true`. String-only column arrays remain supported; the final string becomes the completion column. UI changes are stored as database overrides without rewriting the configuration file.
 
-For PostgreSQL or MySQL, select the corresponding adapter and provide `connectionString`. The `pg` and `mysql2` drivers are optional dependencies. All adapters run schema creation during startup; back up production databases before upgrading between pre-1.0 releases.
+For PostgreSQL or MySQL, select the corresponding adapter and provide `connectionString`. The `pg` and `mysql2` drivers are optional dependencies. Schema migrations run automatically on startup — no manual migration step required.
 
 ## Lifecycle and safety
 

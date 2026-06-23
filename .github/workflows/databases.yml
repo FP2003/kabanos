@@ -1,0 +1,54 @@
+name: Database conformance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 06:00 UTC
+
+jobs:
+  conformance:
+    name: PostgreSQL + MySQL conformance
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: kabanos
+          POSTGRES_PASSWORD: kabanos
+          POSTGRES_DB: kabanos
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_USER: kabanos
+          MYSQL_PASSWORD: kabanos
+          MYSQL_DATABASE: kabanos
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 53306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run database conformance tests
+        env:
+          KABANOS_TEST_POSTGRES: postgres://kabanos:kabanos@127.0.0.1:55432/kabanos
+          KABANOS_TEST_MYSQL: mysql://kabanos:kabanos@127.0.0.1:53306/kabanos
+        run: pnpm test:databases
